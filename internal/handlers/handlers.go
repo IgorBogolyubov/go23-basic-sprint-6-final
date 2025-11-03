@@ -22,12 +22,8 @@ func HandlersRoot(w http.ResponseWriter, r *http.Request) {
 	dir := filepath.Dir(curDir)
 
 	indexFile := filepath.Join(dir, "index.html")
-	inPath, err := filepath.Abs(indexFile)
-	if err != nil {
-		log.Fatal(err)
-	}
 
-	data, err := os.ReadFile(inPath)
+	data, err := os.ReadFile(indexFile)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -60,12 +56,8 @@ func HandlersUpload(w http.ResponseWriter, r *http.Request) {
 	if filename != "" { // поверяем наличие файла в форме
 
 		textFile := filepath.Join(dir, filename)
-		textPath, err := filepath.Abs(textFile)
-		if err != nil {
-			log.Fatal(err)
-		}
 
-		data, err := os.ReadFile(textPath)
+		data, err := os.ReadFile(textFile)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -73,9 +65,8 @@ func HandlersUpload(w http.ResponseWriter, r *http.Request) {
 		out := service.Service(string(data))
 
 		outFile := filepath.Join(dir, string(time.Now().Format("02.01.06 15_04_05")+filepath.Ext(".txt")))
-		outPath, err := filepath.Abs(outFile)
 
-		ftext, err := os.OpenFile(outPath, os.O_CREATE|os.O_RDWR, 0755)
+		ftext, err := os.OpenFile(outFile, os.O_CREATE|os.O_RDWR, 0755)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -86,6 +77,7 @@ func HandlersUpload(w http.ResponseWriter, r *http.Request) {
 		ftext.Close()
 
 		w.Write([]byte(out))
+
 	} else { // если файл не выбран повторяем вывод формы запроса
 		curDir, err := os.Getwd()
 
@@ -96,12 +88,8 @@ func HandlersUpload(w http.ResponseWriter, r *http.Request) {
 		dir := filepath.Dir(curDir)
 
 		indexFile := filepath.Join(dir, "index.html")
-		inPath, err := filepath.Abs(indexFile)
-		if err != nil {
-			log.Fatal(err)
-		}
 
-		data, err := os.ReadFile(inPath)
+		data, err := os.ReadFile(indexFile)
 		if err != nil {
 			log.Fatal(err)
 		}
