@@ -13,8 +13,21 @@ import (
 )
 
 func HandlersRoot(w http.ResponseWriter, r *http.Request) {
+	curDir, err := os.Getwd()
 
-	data, err := os.ReadFile("../index.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	dir := filepath.Dir(curDir)
+
+	indexFile := filepath.Join(dir, "index.html")
+	inPath, err := filepath.Abs(indexFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	data, err := os.ReadFile(inPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -22,6 +35,14 @@ func HandlersRoot(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandlersUpload(w http.ResponseWriter, r *http.Request) {
+
+	curDir, err := os.Getwd()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	dir := filepath.Dir(curDir)
 
 	body, err := io.ReadAll(r.Body)
 	r.Body.Close()
@@ -38,14 +59,23 @@ func HandlersUpload(w http.ResponseWriter, r *http.Request) {
 
 	if filename != "" { // поверяем наличие файла в форме
 
-		data, err := os.ReadFile("C:\\Users\\User\\go23-basic-sprint-6-final\\" + filename)
+		textFile := filepath.Join(dir, filename)
+		textPath, err := filepath.Abs(textFile)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		data, err := os.ReadFile(textPath)
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		out := service.Service(string(data))
 
-		ftext, err := os.OpenFile(string(time.Now().Format("02.01.06 15_04_05")+filepath.Ext(".txt")), os.O_CREATE|os.O_RDWR, 0755)
+		outFile := filepath.Join(dir, string(time.Now().Format("02.01.06 15_04_05")+filepath.Ext(".txt")))
+		outPath, err := filepath.Abs(outFile)
+
+		ftext, err := os.OpenFile(outPath, os.O_CREATE|os.O_RDWR, 0755)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -57,10 +87,23 @@ func HandlersUpload(w http.ResponseWriter, r *http.Request) {
 
 		w.Write([]byte(out))
 	} else { // если файл не выбран повторяем вывод формы запроса
-		data, err := os.ReadFile("../index.html")
+		curDir, err := os.Getwd()
+
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+			log.Fatal(err)
+		}
+
+		dir := filepath.Dir(curDir)
+
+		indexFile := filepath.Join(dir, "index.html")
+		inPath, err := filepath.Abs(indexFile)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		data, err := os.ReadFile(inPath)
+		if err != nil {
+			log.Fatal(err)
 		}
 		w.Write([]byte(data))
 	}
