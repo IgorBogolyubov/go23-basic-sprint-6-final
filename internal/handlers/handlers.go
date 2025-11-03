@@ -20,8 +20,12 @@ func HandlersRoot(w http.ResponseWriter, r *http.Request) {
 	}
 
 	dir := filepath.Dir(curDir)
+	absPath, err := filepath.Abs(dir)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	indexFile := filepath.Join(dir, "index.html")
+	indexFile := filepath.Join(absPath, "index.html")
 
 	data, err := os.ReadFile(indexFile)
 	if err != nil {
@@ -33,12 +37,15 @@ func HandlersRoot(w http.ResponseWriter, r *http.Request) {
 func HandlersUpload(w http.ResponseWriter, r *http.Request) {
 
 	curDir, err := os.Getwd()
-
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	dir := filepath.Dir(curDir)
+	absPath, err := filepath.Abs(dir)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	body, err := io.ReadAll(r.Body)
 	r.Body.Close()
@@ -55,7 +62,7 @@ func HandlersUpload(w http.ResponseWriter, r *http.Request) {
 
 	if filename != "" { // поверяем наличие файла в форме
 
-		textFile := filepath.Join(dir, filename)
+		textFile := filepath.Join(absPath, filename)
 
 		data, err := os.ReadFile(textFile)
 		if err != nil {
@@ -87,7 +94,12 @@ func HandlersUpload(w http.ResponseWriter, r *http.Request) {
 
 		dir := filepath.Dir(curDir)
 
-		indexFile := filepath.Join(dir, "index.html")
+		absPath, err := filepath.Abs(dir)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		indexFile := filepath.Join(absPath, "index.html")
 
 		data, err := os.ReadFile(indexFile)
 		if err != nil {
